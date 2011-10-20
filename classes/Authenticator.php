@@ -135,7 +135,7 @@ class Authenticator {
 		$startPos = hexdec($mac{39}) * 2;
 		// select the byte at starting position and the following 3 bytes
 		$macPart = substr($mac, $startPos, 8);
-		$selectedInt = hexdec($macPart);
+		$selectedInt = hexdec($macPart) & 0x7fffffff;
 		// use the lowest 8 decimal digits from the selected integer as the
 		// current authenticator code
 		return str_pad($selectedInt % 100000000, 8, '0', STR_PAD_LEFT);

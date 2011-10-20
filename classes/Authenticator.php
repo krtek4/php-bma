@@ -102,18 +102,21 @@ class Authenticator {
 		return $result[1];
 	}
 
-	public function initialize($region = 'US') {
+	public function initialize($region) {
 		$f_code = chr(1);
+		$this->region = $region;
 		$enc_key = substr(sha1(rand()), 0, 37);
 		$model = str_pad('PHP_BNA', 16, chr(0), STR_PAD_RIGHT);
 
-		$data = $f_code.$enc_key.$region.$model;
+		$data = $f_code.$enc_key.$this->region().$model;
 		$response = $this->send(self::$initialize_uri, $data);
 
 		$this->set_sync(substr($response, 0, 8));
 		$data = $this->decrypt(substr($response, 8), $enc_key);
 		$this->set_secret(substr($data, 0, 20));
 		$this->set_serial(substr($data, 20));
+
+		echo "New Authenticator requested. Serial: ".$this->serial()." Secret: ".$this->secret()."\r\n\r\n";
 	}
 
 	public function synchronize() {

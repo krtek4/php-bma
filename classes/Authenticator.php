@@ -42,8 +42,6 @@ class Authenticator {
 		$server_time = hexdec(bin2hex($server_time));
 		$current_time = (int) (microtime(true) * 1000);
 		$this->sync = $server_time - $current_time;
-		var_dump($this->sync);
-		var_dump($this->secret);
 	}
 
 	public function serial() {

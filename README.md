@@ -22,7 +22,7 @@ Just pass your serial and secret kez on the command line :
 	
 # Who use it ?
 
-I'm using this on a little project of mine, an [Online Authenticator for Battle.Net](http://authenticator.gloump.net/). It is actually in Beta, but I'm planning on launching it soon.
+I'm using this on a little project of mine, an [Online Authenticator for Battle.Net](http://authenticator.me). It is actually in Beta, but I'm planning on launching it soon.
 
 # Todo
 

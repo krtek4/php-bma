@@ -8,6 +8,7 @@ class Authenticator {
 	static private $server = 'm.%s.mobileservice.blizzard.com';
 	static private $initialize_uri = "/enrollment/enroll.htm";
 	static private $synchronize_uri = "/enrollment/time.htm";
+	static private $waitingtime = 30000;
 
 	private $region = null;
 	private $sync = null;
@@ -34,8 +35,12 @@ class Authenticator {
 		return (int) (microtime(true) * 1000) + $this->sync;
 	}
 
-	public function remainingtime() {
-		return 30000 - ($this->servertime() % 30000);
+	public function waitingtime() {
+		return self::$waitingtime;
+	}
+
+	public function elapsedtime() {
+		return ($this->servertime() % $this->waitingtime());
 	}
 
 	private function set_sync($server_time) {
@@ -126,7 +131,7 @@ class Authenticator {
 
 	public function code() {
 		$secret = pack('H*', $this->secret());
-		$time = (int) ($this->servertime() / 30000);
+		$time = (int) ($this->servertime() / $this->waitingtime());
 		// code interval as a 8 bytes unsigned long big endian order 
 		$intervalNumber = pack('N*', 0, $time);
 		// calculate HMAC-SHA1 from secret key and interval number

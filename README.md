@@ -19,7 +19,7 @@ Before starting to give you a code, the program will print the new serial and se
 Just pass your serial and secret kez on the command line :
 
 	php php-bna.php serial secret_key
-	
+
 # Who use it ?
 
 I'm using this on a little project of mine, an [Online Authenticator for Battle.Net](http://authenticator.me). It is actually in Beta, but I'm planning on launching it soon.
@@ -28,4 +28,5 @@ I'm using this on a little project of mine, an [Online Authenticator for Battle.
 
 * Sanitize inputs
 * Unit tests
-* Save Serial and Secret key to file and / or database
+* Provide the possiblity to save Serial and Secret key to file and / or database
+* Implements the new Restore feature

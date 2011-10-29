@@ -1,7 +1,7 @@
 <?php
 
-// Some crypto functions for Blizzard Authenticator 
-// RSA part based on http://stevish.com/rsa-encryption-in-pure-php 
+// Some crypto functions for Blizzard Authenticator
+// RSA part based on http://stevish.com/rsa-encryption-in-pure-php
 
 // This script is distributed under the terms of the GNU General Public License (GPL)
 // See http://www.gnu.org/licenses/gpl.txt for license details
@@ -32,7 +32,7 @@ class Authenticator_Crypto {
 		return $ret;
 	}
 
-	static public function bchexdec($hex) {
+	static private function bchexdec($hex) {
 		$dec = 0;
 		$len = strlen($hex);
 		for ($i = 1; $i <= $len; $i++)

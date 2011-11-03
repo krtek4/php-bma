@@ -94,12 +94,15 @@ class Authenticator {
 
 	/**
 	 * Create a new Authenticator based on a given restore code
-	 * provided by another device.
+	 * provided by another device and its serial.
+	 * @param string $serial The serial, same format as serial().
 	 * @param string $restore_code 10 characters restore code
 	 * @return Authenticator the requested Authenticator
 	 */
-	static public function restore($restore_code) {
-		throw new NotImplementedAuthenticatorException();
+	static public function restore($serial, $restore_code) {
+		$authenticator = new Authenticator($serial, 'tempsecret');
+		$authenticator->do_restore($restore_code);
+		return $authenticator;
 	}
 
 	/**
@@ -314,6 +317,15 @@ class Authenticator {
 		$this->_set_sync(substr($response, 0, 8));
 		$this->_set_secret(substr($data, 0, 20));
 		$this->set_serial(substr($data, 20));
+	}
+
+	/*
+	 * restore the authenticator with the given code. The serial
+	 * must already been set.
+	 * @param string $restore_code 10 characters restore code
+	 */
+	private function do_restore($restore_code) {
+		throw new NotImplementedAuthenticatorException();
 	}
 
 	/**

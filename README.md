@@ -8,7 +8,7 @@ You can either request a new serial or re-use an existing one.
 
 You must call the script with the desired region passed in parameter :
 
-	php php-bna.php EU
+	php php-bma.php EU
 
 Valid region are `EU` or `US`
 
@@ -18,7 +18,7 @@ Before starting to give you a code, the program will print the new serial and se
 
 Just pass your serial and secret kez on the command line :
 
-	php php-bna.php serial secret_key
+	php php-bma.php serial secret_key
 
 # Who use it ?
 

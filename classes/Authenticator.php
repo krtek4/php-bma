@@ -305,7 +305,7 @@ class Authenticator {
 		$f_code = chr(1);
 		$this->region();
 		$enc_key = substr(sha1(rand()), 0, 37);
-		$model = str_pad('PHP_BNA', 16, chr(0), STR_PAD_RIGHT);
+		$model = str_pad('PHP_BMA', 16, chr(0), STR_PAD_RIGHT);
 
 		$data = $f_code.$enc_key.$this->region().$model;
 		$response = $this->send(self::$initialize_uri, $data);

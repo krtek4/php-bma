@@ -189,7 +189,11 @@ class Authenticator {
 	 * @return string the restore code
 	 */
 	public function restore_code() {
-		throw new NotImplementedAuthenticatorException();
+		$serial = strtoupper(str_replace('-', '', $this->serial()));
+		$secret = pack('H*', $this->secret());
+		// take the 10 last chars of the digest of our data
+		$data = substr(sha1($serial.$secret), -10);
+		return $data;
 	}
 
 	// </editor-fold>

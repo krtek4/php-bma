@@ -32,6 +32,40 @@ class Authenticator_Crypto {
 		return $ret;
 	}
 
+	static public function restore_code_from_char($restore) {
+		for($i = 0; $i < 10; ++$i) {
+			$c = ord($restore{$i});
+			if($c > 47 && $c < 58)
+				$c -= 48;
+			else {
+				$c -= 55;
+				if($c > 72) --$c; // I
+				if($c > 75) --$c; // L
+				if($c > 78) --$c; // O
+				if($c > 82) --$c; // S
+			}
+			$restore{$i} = chr($c);
+		}
+		return $restore;
+	}
+
+	static public function restore_code_to_char($data) {
+		for($i = 0; $i < 10; ++$i) {
+			$c = ord($data{$i}) & 0x1f;
+			if($c < 10)
+				$c += 48;
+			else {
+				$c += 55;
+				if($c > 72) ++$c; // I
+				if($c > 75) ++$c; // L
+				if($c > 78) ++$c; // O
+				if($c > 82) ++$c; // S
+			}
+			$data{$i} = chr($c);
+		}
+		return $data;
+	}
+
 	static private function bchexdec($hex) {
 		$dec = 0;
 		$len = strlen($hex);

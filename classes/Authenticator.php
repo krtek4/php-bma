@@ -191,9 +191,9 @@ class Authenticator {
 	public function restore_code() {
 		$serial = strtoupper(str_replace('-', '', $this->serial()));
 		$secret = pack('H*', $this->secret());
-		// take the 10 last chars of the digest of our data
-		$data = substr(sha1($serial.$secret), -10);
-		return $data;
+		// take the 10 last bytes of the digest of our data
+		$data = substr(sha1($serial.$secret, true), -10);
+		return Authenticator_Crypto::restore_code_to_char($data);
 	}
 
 	// </editor-fold>

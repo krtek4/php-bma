@@ -23,6 +23,8 @@ class Authenticator_Crypto {
 	}
 
 	static public function decrypt($code, $key) {
+		if(strlen($code) != strlen($key))
+			throw new AuthenticatorException('The decryption key size and data size doesn\'t match');
 		$ret = '';
 		for($i = 0; $i < strlen($code); ++$i) {
 			$c = ord($code{$i});

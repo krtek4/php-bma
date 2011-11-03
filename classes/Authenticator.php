@@ -176,6 +176,16 @@ class Authenticator {
 	}
 
 	/**
+	 * The serial of the authenticator with the following format :
+	 * 'XXYYYYYYYYYYYY' where XX is the two character code of the
+	 * region and Ys are numbers.
+	 * @return string the serial
+	 */
+	public function plain_serial() {
+		return strtoupper(str_replace('-', '', $this->serial()));
+	}
+
+	/**
 	 * The secret key of the authenticator as a 40 characters string composed
 	 * of hexadecimal values.
 	 * @return string the secret key
@@ -192,7 +202,7 @@ class Authenticator {
 	 * @return string the restore code
 	 */
 	public function restore_code() {
-		$serial = strtoupper(str_replace('-', '', $this->serial()));
+		$serial = $this->plain_serial();
 		$secret = pack('H*', $this->secret());
 		// take the 10 last bytes of the digest of our data
 		$data = substr(sha1($serial.$secret, true), -10);
@@ -298,6 +308,13 @@ class Authenticator {
 
 		$result = explode("\r\n\r\n", $result, 2);
 
+		preg_match('/\d\d\d/', $result[0], $matches);
+		if(! isset($matches[0]) || $matches[0] != 200) {
+			var_dump($result[0]);
+			var_dump($result[1]);
+			throw new AuthenticatorException('Invalid HTTP status code.');
+		}
+
 		return $result[1];
 	}
 
@@ -325,7 +342,15 @@ class Authenticator {
 	 * @param string $restore_code 10 characters restore code
 	 */
 	private function do_restore($restore_code) {
-		throw new NotImplementedAuthenticatorException();
+		$serial = $this->plain_serial();
+		$challenge = $this->send(self::$restore_uri, $serial);
+		$restore_code == Authenticator_Crypto::restore_code_from_char($restore_code);
+		$mac = hash_hmac('sha1', $serial.$challenge, $restore_code);
+		$enc_key = substr(sha1(rand()), 0, 20);
+		$response = $this->send(self::$restore_validate_uri, $mac.$enc_key);
+		$data = $this->decrypt($response, $enc_key);
+		$this->set_serial($data);	
+		$this->synchronize();
 	}
 
 	/**

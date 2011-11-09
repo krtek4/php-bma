@@ -40,11 +40,11 @@ class Authenticator_Crypto {
 			if($c > 47 && $c < 58)
 				$c -= 48;
 			else {
-				$c -= 55;
-				if($c > 72) --$c; // I
-				if($c > 75) --$c; // L
-				if($c > 78) --$c; // O
 				if($c > 82) --$c; // S
+				if($c > 78) --$c; // O
+				if($c > 75) --$c; // L
+				if($c > 72) --$c; // I
+				$c -= 55;
 			}
 			$restore{$i} = chr($c);
 		}
@@ -74,5 +74,13 @@ class Authenticator_Crypto {
 		for ($i = 1; $i <= $len; $i++)
 			$dec = bcadd($dec, bcmul(strval(hexdec($hex[$i - 1])), bcpow('16', strval($len - $i))));
 		return $dec;
+	}
+
+	static public function safe_dump($data) {
+		$len = strlen($data);
+		echo 'bytes('.$len.') {';
+		for($i = 0; $i < $len; ++$i)
+			echo ord($data{$i}).' ';
+		echo "}\r\n";
 	}
 }

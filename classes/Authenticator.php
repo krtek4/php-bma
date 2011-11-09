@@ -31,6 +31,10 @@ class Authenticator {
 	static private $restore_validate_uri = "/enrollment/validatePaperRestore.htm";
 
 	/**
+	 * @var array array of accepted region string
+	 */
+	static private $accepted_region = array('EU', 'US');
+	/**
 	 * @var int time between two cycles in milliseconds
 	 */
 	static private $waitingtime = 30000;
@@ -253,6 +257,9 @@ class Authenticator {
 	}
 
 	private function set_region($region) {
+		$region = strtoupper($region);
+		if(! in_array($region, self::$accepted_region))
+			throw new AuthenticatorException('Invalid region provided.');
 		$this->region = $region;
 	}
 
@@ -358,7 +365,7 @@ class Authenticator {
 		$serial = $this->plain_serial();
 		$challenge = $this->send(self::$restore_uri, self::RESTORE_CHALLENGE_SIZE, $serial);
 
-		$restore_code == Authenticator_Crypto::restore_code_from_char(strtoupper($restore_code));
+		$restore_code = Authenticator_Crypto::restore_code_from_char(strtoupper($restore_code));
 		$mac = hash_hmac('sha1', $serial.$challenge, $restore_code, true);
 		$enc_key = $this->create_key(20);
 		$data = $serial.$this->encrypt($mac.$enc_key);

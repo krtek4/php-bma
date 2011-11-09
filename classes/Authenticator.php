@@ -372,7 +372,7 @@ class Authenticator {
 		$response = $this->send(self::$restore_validate_uri, self::RESTORE_VALIDATE_SIZE, $data);
 
 		$data = $this->decrypt($response, $enc_key);
-		$this->set_serial($data);
+		$this->_set_secret($data);
 		$this->synchronize();
 	}
 

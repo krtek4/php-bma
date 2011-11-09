@@ -301,7 +301,6 @@ class Authenticator {
 		$host = $this->server();
 		$method = is_null($data) ? 'GET' : 'POST';
 		$data = is_null($data) ? '' : $data;
-		var_dump(strlen($data));
 
 		$http = fsockopen($host, 80, $errno, $errstr, 2);
 		if($http) {
@@ -322,11 +321,8 @@ class Authenticator {
 		$result = explode("\r\n\r\n", $result, 2);
 
 		preg_match('/\d\d\d/', $result[0], $matches);
-		if(! isset($matches[0]) || $matches[0] != 200) {
-			var_dump($result[0]);
-			var_dump($result[1]);
+		if(! isset($matches[0]) || $matches[0] != 200)
 			throw new AuthenticatorException('Invalid HTTP status code.');
-		}
 
 		if(strlen($result[1]) != $response_size)
 			throw new AuthenticatorException('Invalid response data size.');

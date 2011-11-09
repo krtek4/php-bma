@@ -259,7 +259,7 @@ class Authenticator {
 	private function set_region($region) {
 		$region = strtoupper($region);
 		if(! in_array($region, self::$accepted_region))
-			throw new AuthenticatorException('Invalid region provided.');
+			throw new AuthenticatorException('Invalid region provided : '.$region.'.');
 		$this->region = $region;
 	}
 
@@ -315,17 +315,17 @@ class Authenticator {
 			while(! feof($http))
 				$result .= fgets($http, 128);
 		} else
-			throw new AuthenticatorException('Connection failed.');
+			throw new AuthenticatorException('Connection failed : ['.$errno.'] '.$errstr);
 		fclose($http);
 
 		$result = explode("\r\n\r\n", $result, 2);
 
 		preg_match('/\d\d\d/', $result[0], $matches);
 		if(! isset($matches[0]) || $matches[0] != 200)
-			throw new AuthenticatorException('Invalid HTTP status code.');
+			throw new AuthenticatorException('Invalid HTTP status code : '.$matches[0].'.');
 
 		if(strlen($result[1]) != $response_size)
-			throw new AuthenticatorException('Invalid response data size.');
+			throw new AuthenticatorException('Invalid response data size. Received '.strlen($result[1]).' bytes instead of '.$response_size.'.');
 
 		return $result[1];
 	}

@@ -35,6 +35,11 @@ class Authenticator {
 	 */
 	static private $waitingtime = 30000;
 
+	const GENERATE_SIZE = 45;
+	const SYNC_SIZE = 8;
+	const RESTORE_CHALLENGE_SIZE = 32;
+	const RESTORE_VALIDATE_SIZE = 20;
+
 	// </editor-fold>
 
 	// <editor-fold defaultstate="collapsed" desc="variables">
@@ -285,10 +290,11 @@ class Authenticator {
 	 * @param string $data the data
 	 * @return string server response
 	 */
-	private function send($uri, $data = null) {
+	private function send($uri, $response_size, $data = null) {
 		$host = $this->server();
 		$method = is_null($data) ? 'GET' : 'POST';
-		$data = is_null($data) ? '' : $this->encrypt($data);
+		$data = is_null($data) ? '' : $data;
+		var_dump(strlen($data));
 
 		$http = fsockopen($host, 80, $errno, $errstr, 2);
 		if($http) {
@@ -315,7 +321,14 @@ class Authenticator {
 			throw new AuthenticatorException('Invalid HTTP status code.');
 		}
 
+		if(strlen($result[1]) != $response_size)
+			throw new AuthenticatorException('Invalid response data size.');
+
 		return $result[1];
+	}
+
+	private function create_key($size) {
+		return substr(sha1(rand()), 0, $size);
 	}
 
 	/**
@@ -324,11 +337,11 @@ class Authenticator {
 	private function initialize() {
 		$f_code = chr(1);
 		$this->region();
-		$enc_key = substr(sha1(rand()), 0, 37);
+		$enc_key = $this->create_key(37);
 		$model = str_pad('PHP_BMA', 16, chr(0), STR_PAD_RIGHT);
 
 		$data = $f_code.$enc_key.$this->region().$model;
-		$response = $this->send(self::$initialize_uri, $data);
+		$response = $this->send(self::$initialize_uri, self::GENERATE_SIZE, $this->encrypt($data));
 		$data = $this->decrypt(substr($response, 8), $enc_key);
 
 		$this->_set_sync(substr($response, 0, 8));
@@ -343,13 +356,16 @@ class Authenticator {
 	 */
 	private function do_restore($restore_code) {
 		$serial = $this->plain_serial();
-		$challenge = $this->send(self::$restore_uri, $serial);
-		$restore_code == Authenticator_Crypto::restore_code_from_char($restore_code);
-		$mac = hash_hmac('sha1', $serial.$challenge, $restore_code);
-		$enc_key = substr(sha1(rand()), 0, 20);
-		$response = $this->send(self::$restore_validate_uri, $mac.$enc_key);
+		$challenge = $this->send(self::$restore_uri, self::RESTORE_CHALLENGE_SIZE, $serial);
+
+		$restore_code == Authenticator_Crypto::restore_code_from_char(strtoupper($restore_code));
+		$mac = hash_hmac('sha1', $serial.$challenge, $restore_code, true);
+		$enc_key = $this->create_key(20);
+		$data = $serial.$this->encrypt($mac.$enc_key);
+		$response = $this->send(self::$restore_validate_uri, self::RESTORE_VALIDATE_SIZE, $data);
+
 		$data = $this->decrypt($response, $enc_key);
-		$this->set_serial($data);	
+		$this->set_serial($data);
 		$this->synchronize();
 	}
 
@@ -358,7 +374,7 @@ class Authenticator {
 	 * the synchronization data accordingly via _set_sync().
 	 */
 	private function synchronize() {
-		$response = $this->send(self::$synchronize_uri);
+		$response = $this->send(self::$synchronize_uri, self::SYNC_SIZE);
 		$this->_set_sync($response);
 	}
 

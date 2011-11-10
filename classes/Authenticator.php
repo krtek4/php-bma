@@ -3,6 +3,14 @@
 require_once('Authenticator.Crypto.php');
 
 class AuthenticatorException extends Exception { }
+class DataAuthenticatorException extends Exception { }
+class ServerDownAuthenticatorException extends Exception { 
+	public $content;
+	public function __construct($message, $content = null, $code = 0, Exception $previous = NULL) {
+		parent::__construct($message, $code, $previous);
+		$this->content = $content;
+	}
+}
 class NotImplementedAuthenticatorException extends AuthenticatorException { }
 
 class Authenticator {
@@ -139,7 +147,7 @@ class Authenticator {
 	 */
 	public function region() {
 		if(is_null($this->region))
-			throw new AuthenticatorException('Region must be set.');
+			throw new DataAuthenticatorException('Region must be set.');
 		return $this->region;
 	}
 
@@ -180,7 +188,7 @@ class Authenticator {
 	 */
 	public function serial() {
 		if(is_null($this->serial))
-			throw new AuthenticatorException('Unable to find a valid serial');
+			throw new DataAuthenticatorException('Unable to find a valid serial');
 		return $this->serial;
 	}
 
@@ -201,7 +209,7 @@ class Authenticator {
 	 */
 	public function secret() {
 		if(is_null($this->secret))
-			throw new AuthenticatorException('Unable to find the secret key');
+			throw new DataAuthenticatorException('Unable to find the secret key');
 		return $this->secret;
 	}
 
@@ -259,7 +267,7 @@ class Authenticator {
 	private function set_region($region) {
 		$region = strtoupper($region);
 		if(! in_array($region, self::$accepted_region))
-			throw new AuthenticatorException('Invalid region provided : '.$region.'.');
+			throw new DataAuthenticatorException('Invalid region provided : '.$region.'.');
 		$this->region = $region;
 	}
 
@@ -315,17 +323,17 @@ class Authenticator {
 			while(! feof($http))
 				$result .= fgets($http, 128);
 		} else
-			throw new AuthenticatorException('Connection failed : ['.$errno.'] '.$errstr);
+			throw new ServerDownAuthenticatorException('Connection failed : ['.$errno.'] '.$errstr);
 		fclose($http);
 
 		$result = explode("\r\n\r\n", $result, 2);
 
 		preg_match('/\d\d\d/', $result[0], $matches);
 		if(! isset($matches[0]) || $matches[0] != 200)
-			throw new AuthenticatorException('Invalid HTTP status code : '.$matches[0].'.');
+			throw new ServerDownAuthenticatorException('Invalid HTTP status code : '.$matches[0].'.', $result);
 
 		if(strlen($result[1]) != $response_size)
-			throw new AuthenticatorException('Invalid response data size. Received '.strlen($result[1]).' bytes instead of '.$response_size.'.');
+			throw new ServerDownAuthenticatorException('Invalid response data size. Received '.strlen($result[1]).' bytes instead of '.$response_size.'.');
 
 		return $result[1];
 	}

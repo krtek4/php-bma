@@ -33,7 +33,7 @@ class Authenticator {
 	/**
 	 * @var array array of accepted region string
 	 */
-	static private $accepted_region = array('EU', 'US');
+	static private $accepted_region = array('EU', 'US', 'CN');
 	/**
 	 * @var int time between two cycles in milliseconds
 	 */

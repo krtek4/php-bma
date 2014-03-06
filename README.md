@@ -2,23 +2,29 @@ Implementation of the Battle.net Mobile Authenticator in PHP.
 
 # Usage
 
-You can either request a new serial or re-use an existing one.
+You can either request a new serial, generate codes from an existing one, or use your restore code to obtain your secret key.
 
-## New serial
+## Request New Serial
 
 You must call the script with the desired region passed in parameter :
 
-	php php-bma.php EU
+	php php-bma.php new EU
 
 Valid region are `EU` or `US`
 
 Before starting to give you a code, the program will print the new serial and secret kez on screen. Write them down and register your Authenticator with Battle.net
 
-## Existing serial
+## Generate Codes From An Existing Serial
 
-Just pass your serial and secret kez on the command line :
+Just pass your serial and secret key on the command line :
 
-	php php-bma.php serial secret_key
+	php php-bma.php generate serial secret_key
+
+## Use A Restore Code To Obtain A Secret Key
+
+Just pass your serial and restore code on the command line :
+
+	php php-bma.php restore serial restore_code
 
 # Who use it ?
 
@@ -29,4 +35,4 @@ I'm using this on a little project of mine, an [Online Authenticator for Battle.
 * Sanitize inputs
 * Unit tests
 * Provide the possiblity to save Serial and Secret key to file and / or database
-* Implements the new Restore feature
+

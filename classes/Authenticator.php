@@ -19,7 +19,7 @@ class Authenticator {
 	/**
 	 * @var string format for the Battle.Net servers, %s must be replaced by the region
 	 */
-	static private $server = 'm.%s.mobileservice.blizzard.com';
+	static private $server = 'mobile-service.blizzard.com';
 
 	/**
 	 * @var string URI used for initialization

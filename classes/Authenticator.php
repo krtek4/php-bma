@@ -19,7 +19,7 @@ class Authenticator {
 	/**
 	 * @var string format for the Battle.Net servers, %s must be replaced by the region
 	 */
-	static private $server = 'mobile-service.blizzard.com';
+	static private $server = array('eu.battle.net','us.battle.net', 'www.battlenet.com.cn');
 
 	/**
 	 * @var string URI used for initialization
@@ -177,7 +177,7 @@ class Authenticator {
 	 * @return int elapsed time in milliseconds
 	 */
 	public function elapsedtime() {
-		return ($this->servertime() % $this->waitingtime());
+                return fmod(floatval($this->servertime()),$this->waitingtime());
 	}
 
 	/**
@@ -292,7 +292,15 @@ class Authenticator {
 	 * @return string The server address
 	 */
 	private function server() {
-		return sprintf(self::$server, strtolower($this->region()));
+		switch($this->region()){
+                    case self::$accepted_region[0]:
+                        return self::$server[0];
+                    case self::$accepted_region[1]:
+                        return self::$server[1];
+                    case self::$accepted_region[2]:
+                        return self::$server[2];
+		}
+		throw new DataAuthenticatorException('Invalid region provided : '.$this->region().'.');
 	}
 
 	// </editor-fold>

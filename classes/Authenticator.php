@@ -177,7 +177,7 @@ class Authenticator {
 	 * @return int elapsed time in milliseconds
 	 */
 	public function elapsedtime() {
-		return ($this->servertime() % $this->waitingtime());
+		return (($this->servertime() + (0.25*$this->waitingtime())) % $this->waitingtime());
 	}
 
 	/**

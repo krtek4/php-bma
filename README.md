@@ -30,6 +30,8 @@ Just pass your serial and restore code on the command line :
 
 I'm using this on a little project of mine, an [Online Authenticator for Battle.Net](http://authenticator.me). It is actually in Beta, but I'm planning on launching it soon.
 
+<a href='https://github.com/ymback'>ymback</a> has created a <a href='https://github.com/ymback/Battle.net-Authenticator-Online'>repo</a>, using this as a library on his [Battle.Net Authenticator Online](https://myauth.us). A Chinese-based website.
+
 # Todo
 
 * Sanitize inputs
